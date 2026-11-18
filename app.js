@@ -1,24 +1,28 @@
-var state = { tab: "buddha", filter: "All" };
+var state = { voice: "Buddha" };
 var bags = {};
 var current = null;
 
 try {
-  var saved = localStorage.getItem("stillpoint-tab");
-  if (saved === "buddha" || saved === "stoic") state.tab = saved;
+  var saved = localStorage.getItem("stillpoint-voice");
+  if (saved && VOICES.some(function (v) { return v.name === saved; })) state.voice = saved;
 } catch (e) {}
 
+function voiceInfo() {
+  return VOICES.filter(function (v) { return v.name === state.voice; })[0];
+}
+
 function pool() {
-  if (state.tab === "buddha") {
+  if (state.voice === "Buddha") {
     return BUDDHA.map(function (q) { return { text: q[0], who: "The Buddha", src: q[1] }; });
   }
   return STOIC
-    .filter(function (q) { return state.filter === "All" || q[1] === state.filter; })
+    .filter(function (q) { return q[1] === state.voice; })
     .map(function (q) { return { text: q[0], who: q[1], src: q[2] }; });
 }
 
-/* Shuffle-bag draw: no repeats until every quote in the pool has been shown. */
+/* Shuffle-bag draw: no repeats until every quote for this voice has been shown. */
 function draw() {
-  var key = state.tab + "|" + state.filter;
+  var key = state.voice;
   if (!bags[key] || !bags[key].length) {
     var order = pool();
     for (var i = order.length - 1; i > 0; i--) {
@@ -46,34 +50,26 @@ function show(animate) {
 }
 
 function renderChrome() {
-  document.body.setAttribute("data-tab", state.tab);
-  document.getElementById("eyebrow").textContent =
-    state.tab === "buddha" ? "Words attributed to the Buddha" : "Stoic philosophers";
-  ["buddha", "stoic"].forEach(function (k) {
-    document.getElementById("tab-" + k).setAttribute("aria-selected", String(state.tab === k));
-  });
-  var chips = document.getElementById("chips");
-  chips.hidden = state.tab !== "stoic";
-  chips.innerHTML = "";
-  FILTERS.forEach(function (f) {
+  document.body.setAttribute("data-voice", state.voice);
+  document.getElementById("eyebrow").textContent = voiceInfo().tag;
+  var row = document.getElementById("voices");
+  row.innerHTML = "";
+  VOICES.forEach(function (v) {
     var b = document.createElement("button");
     b.type = "button";
-    b.className = "chip";
-    b.textContent = f;
-    b.setAttribute("aria-pressed", String(state.filter === f));
-    b.addEventListener("click", function () { state.filter = f; renderChrome(); show(true); });
-    chips.appendChild(b);
+    b.className = "voice";
+    b.textContent = v.name;
+    b.setAttribute("aria-pressed", String(state.voice === v.name));
+    b.addEventListener("click", function () {
+      if (state.voice === v.name) return;
+      state.voice = v.name;
+      try { localStorage.setItem("stillpoint-voice", state.voice); } catch (e) {}
+      renderChrome();
+      show(true);
+    });
+    row.appendChild(b);
   });
 }
-
-document.querySelectorAll(".tab").forEach(function (b) {
-  b.addEventListener("click", function () {
-    state.tab = b.getAttribute("data-tab");
-    try { localStorage.setItem("stillpoint-tab", state.tab); } catch (e) {}
-    renderChrome();
-    show(true);
-  });
-});
 
 document.getElementById("next").addEventListener("click", function () { show(true); });
 

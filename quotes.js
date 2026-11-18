@@ -33,4 +33,10 @@ var STOIC = [
   ["It is impossible to begin to learn that which a man thinks he already knows.", "Epictetus", "Discourses 2.17"]
 ];
 
-var FILTERS = ["All", "Marcus Aurelius", "Seneca", "Epictetus"];
+
+var VOICES = [
+  { name: "Buddha", tag: "Words attributed to the Buddha" },
+  { name: "Marcus Aurelius", tag: "Roman emperor, 121\u2013180 AD" },
+  { name: "Seneca", tag: "Roman statesman, c. 4 BC \u2013 65 AD" },
+  { name: "Epictetus", tag: "Greek Stoic teacher, c. 50\u2013135 AD" }
+];

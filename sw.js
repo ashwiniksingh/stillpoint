@@ -1,14 +1,14 @@
 /* Cache-first service worker. Bump CACHE when you change any file so phones pick up the update. */
-var CACHE = "stillpoint-v1";
+var CACHE = "stillpoint-v2";
 var FILES = [
   "./",
   "index.html",
   "app.js",
   "quotes.js",
   "manifest.webmanifest",
-  "icons/icon-192.png",
-  "icons/icon-512.png",
-  "icons/apple-touch-icon.png"
+  "icon-192.png",
+  "icon-512.png",
+  "apple-touch-icon.png"
 ];
 
 self.addEventListener("install", function (e) {
